@@ -697,18 +697,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: -0.008254334, y: -0.14756382}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 3, y: 2.25}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.8844384, y: 1.9048724}
   m_EdgeRadius: 0
 --- !u!50 &1747163734
 Rigidbody2D:
@@ -778,7 +778,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 96be36fcbc69e8944b5d9f089bc07112, type: 3}
   m_Color: {r: 0.495283, g: 1, b: 0.99001265, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -798,8 +798,8 @@ Transform:
   m_GameObject: {fileID: 1747163732}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5, y: -2, z: 0}
-  m_LocalScale: {x: 1.25, y: 2, z: 1}
+  m_LocalPosition: {x: -3.7119, y: -1.8085, z: 0}
+  m_LocalScale: {x: 2.10875, y: 1.8298, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -816,12 +816,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 508d685de9d63104993c6182e546ac54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7.5
-  jumpForce: {x: 0, y: 300, z: 0}
+  speed: 10
+  jumpForce: {x: 0, y: 400, z: 0}
   myAnimator: {fileID: 0}
   canJump: 0
   Fireball: {fileID: 0}
   playerPosition: {x: 0, y: 0, z: 0}
+  direction: 0
+  playerFacedRight: {x: 2.10875, y: 1.8298, z: 1}
+  playerFacedLeft: {x: -2.10875, y: 1.8298, z: 1}
   playerStateMachine: 0
 --- !u!95 &1747163738
 Animator:
@@ -833,7 +836,7 @@ Animator:
   m_GameObject: {fileID: 1747163732}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: dc1e5a04cb38368459e46e0ef56905a9, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

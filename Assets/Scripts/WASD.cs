@@ -15,6 +15,10 @@ public class WASD : MonoBehaviour
     public GameObject Fireball;
     public Vector3 playerPosition;
 
+    public bool direction;
+    public Vector3 playerFacedRight;
+    public Vector3 playerFacedLeft;
+
     // Start is called before the first frame update
 
     public enum PlayerState
@@ -33,8 +37,7 @@ public class WASD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        playerPosition = GetComponent<Transform>().position;
+         playerPosition = GetComponent<Transform>().position;
 
         dir = Direction();
         if (dir != Vector3.zero)
@@ -51,15 +54,20 @@ public class WASD : MonoBehaviour
         {
             case PlayerState.IDLE:
                 myAnimator.SetBool("isIdle", true);
+                
+
+
                 break;
 
             case PlayerState.RUNNING:
                 myAnimator.SetBool("isIdle", false);
                 //Debug.Log("desired dir based off player input: " + dir);
                 transform.Translate(dir * speed * Time.deltaTime);
+
                 break;
 
             case PlayerState.FALLING:
+
                 break;
         }
 
@@ -70,6 +78,8 @@ public class WASD : MonoBehaviour
         if (collision.gameObject.tag == "Ground")
         {
             canJump = true;
+            myAnimator.SetBool("isFalling", false);
+
         }
 
 
@@ -82,6 +92,8 @@ public class WASD : MonoBehaviour
     {
 
         canJump = false;
+        myAnimator.SetBool("isFalling", true);
+
 
     }
 
@@ -102,16 +114,10 @@ public class WASD : MonoBehaviour
 
 
                 GetComponent<Rigidbody2D>().AddForce(jumpForce);
-
+                
 
             }
 
-        
-        }
-        else if (Input.GetKey(KeyCode.S))
-        { 
-            
-            v += Vector3.down; 
         
         }
 
@@ -120,13 +126,17 @@ public class WASD : MonoBehaviour
         { 
             
             v += Vector3.right;
-        
+
+            direction = true;
+            GetComponent<Transform>().localScale = playerFacedRight;
+
         }
         else if (Input.GetKey(KeyCode.A))
         { 
             
             v += Vector3.left;
-        
+            GetComponent<Transform>().localScale = playerFacedLeft;
+
         }
         
         //return our desired direction after all WASD checks  
