@@ -58,9 +58,6 @@ public class fireBallScript : MonoBehaviour
             Destroy(gameObject);
         }
 
-
-
-
     }
 
 }

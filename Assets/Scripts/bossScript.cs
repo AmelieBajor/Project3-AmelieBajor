@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class bossScript : MonoBehaviour
 {
+    SpriteRenderer mySprite;
 
     public Vector3 bossMoveLeft;
     public Vector3 bossMoveRight;
@@ -20,12 +21,16 @@ public class bossScript : MonoBehaviour
 
     public GameObject player;
     public GameObject fireball;
+    public GameObject fireball3;
+
     public WASD playerPlacement;
+
+    public Vector3 playerPlacementVector;
+
     public Vector3 bossPlacement;
 
-    public Vector3 bossFacedRight;
-    public Vector3 bossFacedLeft;
-    public Vector3 FireBallPlacementOne;
+    public Vector3 FireBallPlacement;
+    public Vector3 FireBall3Placement;
 
     public enum BossPhase
     {
@@ -38,12 +43,13 @@ public class bossScript : MonoBehaviour
     void Start()
     {
         playerPlacement = player.GetComponent<WASD>();
-
+        mySprite = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update()
     {
+
         bossMoveTimer += Time.deltaTime;
         bossAttackTimer += Time.deltaTime;
 
@@ -53,7 +59,7 @@ public class bossScript : MonoBehaviour
         if (playerPlacement.playerPosition.x >= bossPlacement.x)
         {
             direction = true;
-            GetComponent<Transform>().localScale = bossFacedRight;
+            mySprite.flipX = true;
         }
 
         //player is left to boss
@@ -61,7 +67,7 @@ public class bossScript : MonoBehaviour
         {
 
             direction = false;
-            GetComponent<Transform>().localScale = bossFacedLeft;
+            mySprite.flipX = false;
 
 
         }
@@ -69,19 +75,33 @@ public class bossScript : MonoBehaviour
 
         if (bossAttackTimer >= 3)
         {
+            attackChance = Random.Range(1, 4);
 
-                if(direction == true)
+            if (attackChance == 1)
+            {
+                if (mySprite.flipX == true)
                 {
-                    Instantiate(fireball, GetComponent<Transform>().position + FireBallPlacementOne, Quaternion.identity);
+                    Instantiate(fireball, GetComponent<Transform>().position + FireBallPlacement, Quaternion.identity);
 
 
                 }
 
-                else if (direction == false)
+                else if (mySprite.flipX == false)
                 {
-                    Instantiate(fireball, GetComponent<Transform>().position - FireBallPlacementOne, Quaternion.identity);
+                    Instantiate(fireball, GetComponent<Transform>().position - FireBallPlacement, Quaternion.identity);
                 }
-   
+
+
+
+            }
+
+   if (attackChance == 3)
+            {
+                Instantiate(fireball3, GetComponent<Transform>().position + FireBall3Placement, Quaternion.identity);
+                Instantiate(fireball3, GetComponent<Transform>().position - FireBall3Placement, Quaternion.identity);
+
+
+            }
             
 
 

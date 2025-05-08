@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WASD : MonoBehaviour
 {
+    SpriteRenderer mySprite;
+
     //speed is our public mod for the direction input
     public float speed = 1f;
     public Vector3 jumpForce;
@@ -11,8 +13,17 @@ public class WASD : MonoBehaviour
     Rigidbody2D myRB;
     Vector3 dir = new Vector3(0, 0, 0);
 
+    public bossScript bossFallAttack;
+    public GameObject boss;
+
+
+    public GameObject fireball2;
+    public Vector3 fireball2Placement;
+    public GameObject bullet;
+    public Vector3 bulletOffset;
+
     public bool canJump;
-    public GameObject Fireball;
+    public bool direction;
     public Vector3 playerPosition;
 
     // Start is called before the first frame update
@@ -29,6 +40,10 @@ public class WASD : MonoBehaviour
     {
         playerStateMachine = PlayerState.FALLING;
         myAnimator = GetComponent<Animator>();
+        mySprite = GetComponent<SpriteRenderer>();
+        bossFallAttack = boss.GetComponent<bossScript>();
+
+
     }
     // Update is called once per frame
     void Update()
@@ -61,6 +76,37 @@ public class WASD : MonoBehaviour
 
             case PlayerState.FALLING:
                 break;
+        }
+
+
+
+        if (bossFallAttack.attackChance == 2)
+        {
+
+
+            Instantiate(fireball2, GetComponent<Transform>().position + fireball2Placement, Quaternion.identity);
+            bossFallAttack.attackChance = 0;
+
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (direction == true)
+            {
+
+                Instantiate(bullet, GetComponent<Transform>().position + bulletOffset, Quaternion.identity);
+
+
+            }
+            if (direction == false)
+            {
+
+                Instantiate(bullet, GetComponent<Transform>().position - bulletOffset, Quaternion.identity);
+
+
+            }
+
         }
 
 
@@ -120,14 +166,21 @@ public class WASD : MonoBehaviour
         { 
             
             v += Vector3.right;
-        
+            mySprite.flipX = true;
+            direction = true;
+
         }
         else if (Input.GetKey(KeyCode.A))
         { 
             
             v += Vector3.left;
-        
+            mySprite.flipX = false;
+            direction = false;
+
         }
+
+
+
         
         //return our desired direction after all WASD checks  
         return v;
