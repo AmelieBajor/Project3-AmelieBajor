@@ -8,6 +8,7 @@ TagManager:
   - Weakpoint
   - Boss
   - Hazard
+  - Wall
   layers:
   - Default
   - TransparentFX

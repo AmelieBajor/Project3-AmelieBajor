@@ -26,6 +26,12 @@ public class WASD : MonoBehaviour
     public bool direction;
     public Vector3 playerPosition;
 
+    public gameManagerScript health;
+    public GameObject GameManager;
+
+    public bool isInvincible;
+    public float invincibilityTimer;
+
     // Start is called before the first frame update
 
     public enum PlayerState
@@ -42,12 +48,28 @@ public class WASD : MonoBehaviour
         myAnimator = GetComponent<Animator>();
         mySprite = GetComponent<SpriteRenderer>();
         bossFallAttack = boss.GetComponent<bossScript>();
+        health = GameManager.GetComponent<gameManagerScript>();
 
+        isInvincible = false;
 
     }
     // Update is called once per frame
     void Update()
     {
+
+        if (invincibilityTimer > 0)
+        {
+            isInvincible = true;
+            invincibilityTimer -= Time.deltaTime;
+
+        }
+        if (invincibilityTimer <= 0)
+        {
+
+            isInvincible = false;
+            invincibilityTimer = 0;
+
+        }
 
         playerPosition = GetComponent<Transform>().position;
 
@@ -121,8 +143,37 @@ public class WASD : MonoBehaviour
 
 
 
+
+        if (collision.gameObject.tag == "Boss")
+        {
+            if (isInvincible == false)
+            {
+
+                invincibilityTimer = 5;
+
+            }
+        }
+
+
+
+
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+
+
+        if (collision.gameObject.tag == "Hazard")
+        {
+            if (isInvincible == false)
+            {
+
+                invincibilityTimer = 5;
+
+            }
+        }
+
+    }
 
     void OnCollisionExit2D(Collision2D collision)
     {

@@ -25,8 +25,6 @@ public class bossScript : MonoBehaviour
 
     public WASD playerPlacement;
 
-    public Vector3 playerPlacementVector;
-
     public Vector3 bossPlacement;
 
     public Vector3 FireBallPlacement;
