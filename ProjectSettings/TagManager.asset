@@ -9,6 +9,7 @@ TagManager:
   - Boss
   - Hazard
   - Wall
+  - Bullet
   layers:
   - Default
   - TransparentFX
