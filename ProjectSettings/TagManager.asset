@@ -10,6 +10,11 @@ TagManager:
   - Hazard
   - Wall
   - Bullet
+  - Platform
+  - PhaseTwoPlatform
+  - Lava
+  - BossPhaseTwo
+  - ForceField
   layers:
   - Default
   - TransparentFX

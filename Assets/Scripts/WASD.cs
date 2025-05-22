@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WASD : MonoBehaviour
 {
@@ -16,6 +17,12 @@ public class WASD : MonoBehaviour
     public bossScript bossFallAttack;
     public GameObject boss;
 
+    public int playerhealth;
+    public int mana;
+
+    public Slider healthBar;
+    public Slider manaBar;
+    public float manaRecharge;
 
     public GameObject fireball2;
     public Vector3 fireball2Placement;
@@ -26,29 +33,31 @@ public class WASD : MonoBehaviour
     public bool direction;
     public Vector3 playerPosition;
 
-    public gameManagerScript health;
     public GameObject GameManager;
 
     public bool isInvincible;
     public float invincibilityTimer;
 
+    public bool activatedPhaseTwo;
     // Start is called before the first frame update
 
     public enum PlayerState
     {
-        RUNNING,
         IDLE,
-        FALLING
+        DAMAGED,
+        RUNNING
     }
     public PlayerState playerStateMachine;
 
     void Start()
     {
-        playerStateMachine = PlayerState.FALLING;
+        playerhealth = 3;
+        mana = 12;
+
+        playerStateMachine = PlayerState.IDLE;
         myAnimator = GetComponent<Animator>();
         mySprite = GetComponent<SpriteRenderer>();
         bossFallAttack = boss.GetComponent<bossScript>();
-        health = GameManager.GetComponent<gameManagerScript>();
 
         isInvincible = false;
 
@@ -56,16 +65,55 @@ public class WASD : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        switch (playerStateMachine)
+        {
+
+            case PlayerState.IDLE:
+                myAnimator.SetBool("isDamaged", false);
+                break;
+            case PlayerState.DAMAGED:
+                myAnimator.SetBool("isDamaged", true);
+                break;
+
+        }
+
+        healthBar.value = playerhealth;
+        manaBar.value = mana;
+
+        if (playerhealth <= 0)
+        {
+
+            Destroy(gameObject);
+
+
+        }
+
+        if (mana <= 12)
+        {
+
+            manaRecharge += Time.deltaTime /2;
+
+            if (manaRecharge >= 1)
+            {
+
+                mana += 1;
+                manaRecharge = 0;
+
+            }
+
+
+        }
 
         if (invincibilityTimer > 0)
         {
+            playerStateMachine = PlayerState.DAMAGED;
             isInvincible = true;
             invincibilityTimer -= Time.deltaTime;
 
         }
         if (invincibilityTimer <= 0)
         {
-
+            playerStateMachine = PlayerState.IDLE;
             isInvincible = false;
             invincibilityTimer = 0;
 
@@ -78,10 +126,6 @@ public class WASD : MonoBehaviour
         {
             playerStateMachine = PlayerState.RUNNING;
         }
-        else
-        {
-            playerStateMachine = PlayerState.IDLE;
-        }
 
 
         switch (playerStateMachine)
@@ -91,13 +135,10 @@ public class WASD : MonoBehaviour
                 break;
 
             case PlayerState.RUNNING:
-                myAnimator.SetBool("isIdle", false);
                 //Debug.Log("desired dir based off player input: " + dir);
                 transform.Translate(dir * speed * Time.deltaTime);
                 break;
 
-            case PlayerState.FALLING:
-                break;
         }
 
 
@@ -114,18 +155,23 @@ public class WASD : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (direction == true)
+            if (mana > 0)
             {
+                mana -= 1;
+                if (direction == true)
+                {
 
-                Instantiate(bullet, GetComponent<Transform>().position + bulletOffset, Quaternion.identity);
+                    Instantiate(bullet, GetComponent<Transform>().position + bulletOffset, Quaternion.identity);
 
 
-            }
-            if (direction == false)
-            {
+                }
+                if (direction == false)
+                {
 
-                Instantiate(bullet, GetComponent<Transform>().position - bulletOffset, Quaternion.identity);
+                    Instantiate(bullet, GetComponent<Transform>().position - bulletOffset, Quaternion.identity);
 
+
+                }
 
             }
 
@@ -139,8 +185,19 @@ public class WASD : MonoBehaviour
         {
             canJump = true;
         }
+        if (collision.gameObject.tag == "Platform")
+        {
+            canJump = true;
+        }
+        if (collision.gameObject.tag == "PhaseTwoPlatform")
+        {
+            canJump = true;
 
-
+        }
+        if (collision.gameObject.tag == "Lava")
+        {
+            canJump = true;
+        }
 
 
 
@@ -149,7 +206,7 @@ public class WASD : MonoBehaviour
             if (isInvincible == false)
             {
 
-                invincibilityTimer = 5;
+                invincibilityTimer = 1;
 
             }
         }
@@ -167,11 +224,50 @@ public class WASD : MonoBehaviour
         {
             if (isInvincible == false)
             {
-
+                playerhealth -= 1;
                 invincibilityTimer = 5;
 
             }
         }
+
+        if (collision.gameObject.tag == "BossPhaseTwo")
+        {
+            if (isInvincible == false)
+            {
+                playerhealth -= 1;
+                invincibilityTimer = 5;
+
+            }
+        }
+
+        if (collision.gameObject.tag == "Lava")
+        {
+            playerhealth -= 1;
+            invincibilityTimer = 5;
+            GetComponent<Rigidbody2D>().AddForce(jumpForce);
+        }
+
+
+        if (bossFallAttack.BossPhaseMachine == bossScript.BossPhase.PHASETWObetween)
+        {
+
+            if (collision.gameObject.tag == "PhaseTwoPlatform")
+            {
+                bossFallAttack.BossPhaseMachine = bossScript.BossPhase.PHASETWO;
+
+                if (activatedPhaseTwo == false)
+                {
+                    activatedPhaseTwo = true;
+                    bossFallAttack.BossPhaseMachine = bossScript.BossPhase.PHASETWOinProgress;
+
+                }
+
+
+            }
+
+
+        }
+
 
     }
 
@@ -203,12 +299,6 @@ public class WASD : MonoBehaviour
 
             }
 
-        
-        }
-        else if (Input.GetKey(KeyCode.S))
-        { 
-            
-            v += Vector3.down; 
         
         }
 

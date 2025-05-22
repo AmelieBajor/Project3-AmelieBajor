@@ -12,6 +12,14 @@ public class bossScript : MonoBehaviour
     public Vector3 bossMoveJump;
     public Vector3 bossMoveWait;
 
+    public Animator myAnimator;
+
+    public CameraMoveScript cameraShakeEffect;
+    public GameObject cameraObject;
+
+    public GameObject inbetweenMusic;
+    public GameObject phaseTwoMusic;
+
     public int movementChance;
     public int attackChance;
 
@@ -27,28 +35,44 @@ public class bossScript : MonoBehaviour
 
     public int bossHealth;
 
+    public AudioClip GroundPoundSound;
+    AudioSource bossSource;
+
+    public bool phaseTwoMusicActive;
 
     public GameObject player;
     public GameObject fireball;
-    public GameObject fireball3;
+    public GameObject groundPound;
 
     public WASD playerPlacement;
 
     public Vector3 bossPlacement;
 
     public Vector3 FireBallPlacement;
-    public Vector3 FireBall3Placement;
+    public Vector3 groundPoundPlacement;
+    public bool doingGroundPound;
+
+    public bool phaseOneEnd;
 
     public enum BossPhase
     {
         PHASEONE,
         PHASETWObetween,
         PHASETWO,
-        PHASETHREEbetween,
-        PHASETHREE
+        PHASETWOinProgress,
     }
 
+    public enum BossAnimations
+    {
+     IDLE,
+     JUMPING,
+     ATTACKING,
+     RESTING
+    }
+
+
     public BossPhase BossPhaseMachine;
+    public BossAnimations AnimationMachine;
 
     // Start is called before the first frame update
     void Start()
@@ -57,11 +81,27 @@ public class bossScript : MonoBehaviour
         bossHealth = 100;
         playerPlacement = player.GetComponent<WASD>();
         mySprite = GetComponent<SpriteRenderer>();
+        cameraShakeEffect = cameraObject.GetComponent<CameraMoveScript>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        switch (AnimationMachine)
+        {
+
+            case BossAnimations.IDLE:
+                myAnimator.SetBool("isResting", false);
+                break;
+            case BossAnimations.RESTING:
+                myAnimator.SetBool("isResting", true);
+                break;
+
+        }
+
+
+
+
         healthBar.value = bossHealth;
         if (BossPhaseMachine == BossPhase.PHASEONE)
         {
@@ -114,8 +154,8 @@ public class bossScript : MonoBehaviour
 
                 if (attackChance == 3)
                 {
-                    Instantiate(fireball3, GetComponent<Transform>().position + FireBall3Placement, Quaternion.identity);
-                    Instantiate(fireball3, GetComponent<Transform>().position - FireBall3Placement, Quaternion.identity);
+                    GetComponent<Rigidbody2D>().AddForce(bossMoveJump);
+                    doingGroundPound = true;
 
 
                 }
@@ -159,12 +199,6 @@ public class bossScript : MonoBehaviour
                     GetComponent<Rigidbody2D>().AddForce(bossMoveRight);
 
                 }
-                else if (movementChance == 5)
-                {
-
-                    GetComponent<Rigidbody2D>().AddForce(bossMoveJump);
-
-                }
 
 
                 bossMoveTimer = 0;
@@ -174,13 +208,13 @@ public class bossScript : MonoBehaviour
             }
             if (restingCount >= 3)
             {
-
+                AnimationMachine = BossAnimations.RESTING;
                 playerCanAttack = true;
 
             }
             else
             {
-
+                AnimationMachine = BossAnimations.IDLE;
                 playerCanAttack = false;
 
             }
@@ -207,21 +241,40 @@ public class bossScript : MonoBehaviour
         if (bossHealth <= 50)
         {
 
-            BossPhaseMachine = BossPhase.PHASETWObetween;
+            if (phaseOneEnd == false)
+            {
+                BossPhaseMachine = BossPhase.PHASETWObetween;
+                Instantiate(inbetweenMusic);
+                phaseOneEnd = true;
+
+            }
+
 
         }
 
         if (BossPhaseMachine == BossPhase.PHASETWObetween)
         {
 
-            GetComponent<Transform>().position += bossMoveJump/10;
+            GetComponent<Transform>().position -= bossMoveJump;
+
+        }
+
+        if (BossPhaseMachine == BossPhase.PHASETWOinProgress)
+        {
+            if (phaseTwoMusicActive == false)
+            {
+
+                Instantiate(phaseTwoMusic);
+                phaseTwoMusicActive = true;
+            }
+
 
         }
 
 
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+        void OnCollisionEnter2D(Collision2D collision)
     {
 
         if (collision.gameObject.tag == "Bullet")
@@ -231,11 +284,29 @@ public class bossScript : MonoBehaviour
                 if (playerCanAttack == true)
                 {
 
-                    bossHealth -= 1;
+                    bossHealth -= 5;
 
                 }
 
 
+
+            }
+
+        }
+
+        if (collision.gameObject.tag == "Ground")
+        {
+            if (doingGroundPound == true)
+            {
+
+               Instantiate(groundPound, GetComponent<Transform>().position + groundPoundPlacement, Quaternion.identity);
+                /*
+                bossSource.clip = GroundPoundSound;
+                bossSource.Play();
+                */
+                doingGroundPound = false;
+                cameraShakeEffect.doingShake = true;
+                
 
             }
 
